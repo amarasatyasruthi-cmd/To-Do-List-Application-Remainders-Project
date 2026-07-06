@@ -1,0 +1,80 @@
+import tkinter as tk
+from tkinter import messagebox
+
+root = tk.Tk()
+root.title("To-Do List & Reminders")
+root.geometry("400x450")
+root.config(bg="#f4f4f9")
+
+tasks_list = []
+
+
+def add_task():
+    task_text = task_entry.get().strip()
+    if task_text != "":
+        tasks_list.append(task_text)
+        update_listbox()
+        task_entry.delete(0, tk.END)
+    else:
+        messagebox.showwarning("Warning", "You must enter a task!")
+
+def delete_task():
+    try:
+        selected_index = task_listbox.curselection()[0]
+        tasks_list.pop(selected_index)
+        update_listbox()
+    except IndexError:
+        messagebox.showwarning("Warning", "Please select a task to delete.")
+
+def clear_tasks():
+    if messagebox.askyesno("Confirmation", "Are you sure you want to clear all tasks?"):
+        tasks_list.clear()
+        update_listbox()
+
+def update_listbox():
+    task_listbox.delete(0, tk.END)  # Clear current view
+    for task in tasks_list:
+        task_listbox.insert(tk.END, f"• {task}")
+
+title_label = tk.Label(root, text="My Reminders & Tasks", font=("Arial", 16, "bold"), bg="#f4f4f9", fg="#333333")
+title_label.pack(pady=10)
+
+input_frame = tk.Frame(root, bg="#f4f4f9")
+input_frame.pack(pady=5)
+
+task_entry = tk.Entry(input_frame, width=28, font=("Arial", 12))
+task_entry.pack()
+task_entry.bind("<Return>", lambda event: add_task())  # Allow adding task with Enter key
+
+listbox_frame = tk.Frame(root)
+listbox_frame.pack(pady=10)
+
+task_listbox = tk.Listbox(
+    listbox_frame, 
+    width=35, 
+    height=12, 
+    font=("Arial", 12), 
+    selectbackground="#a6a6a6",
+    activestyle="none"
+)
+task_listbox.pack(side=tk.LEFT, fill=tk.BOTH)
+
+scrollbar = tk.Scrollbar(listbox_frame)
+scrollbar.pack(side=tk.RIGHT, fill=tk.BOTH)
+
+task_listbox.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=task_listbox.yview)
+
+button_frame = tk.Frame(root, bg="#f4f4f9")
+button_frame.pack(pady=10)
+
+add_btn = tk.Button(button_frame, text="Add Task", width=10, bg="#4CAF50", fg="white", font=("Arial", 10, "bold"), command=add_task)
+add_btn.grid(row=0, column=0, padx=5)
+
+delete_btn = tk.Button(button_frame, text="Delete Task", width=10, bg="#f44336", fg="white", font=("Arial",10,"bold"),command=delete_task)
+delete_btn.grid(row=0, column=1, padx=5)
+
+clear_btn = tk.Button(button_frame, text="Clear All", width=10, bg="#ff9800", fg="white", font=("Arial", 10, "bold"), command=clear_tasks)
+clear_btn.grid(row=0, column=2, padx=5)
+
+root.mainloop()
